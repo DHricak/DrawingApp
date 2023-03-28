@@ -51,6 +51,7 @@
     }
 
     input {
+      color: #fff;
       border: 1px solid #808080;
       border-radius: 4px;
       padding: 4px;

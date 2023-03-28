@@ -130,6 +130,7 @@
   on:mousemove={draw}
   on:mouseup={relesed}
   class:nocursor={tool != "move"}
+  class:movecursor={tool == "move"}
 >
 </canvas>
 <div 
@@ -140,6 +141,7 @@
   style:height={`${pen.width}px`}
   style:top={`${by}px`}
   style:left={`${bx}px`}
+  style:border={`1px solid ${pen.color}`}
 ></div>
 
 <style lang="scss">
@@ -151,14 +153,17 @@
   .nocursor {
     cursor: none;
   }
+  .movecursor {
+    cursor: move;
+  }
 
   .brush {
     z-index: 7;
     position: absolute;
     transform: translateX(-50%) translateY(-50%);
     border-radius: 50%;
-    border: 1px solid #808080;
     pointer-events: none;
+    filter: invert(1);
   }
 
   .hide {

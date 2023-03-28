@@ -1,8 +1,13 @@
 <script lang="ts">
+  import { tool as tot } from "@store";
+  let tool: tools;
+  tot.subscribe(r => tool = r);
+
 
 // --- variables ---
+  let id: number; // id from save
   // win params
-  let blockSize = Math.max(window.innerWidth/16*9, 200);
+  let blockSize = 480;
   let winX: number, winY: number;
 
   // canvas pos
@@ -12,14 +17,13 @@
   let orx = posx, ory = posy;
 
   // blocks grid
-  let blocks: Dict<block> = {};
-  let show: uiblock[][];
+  let blocks: Dict<ImageData> = {};
+  let show: uiblock[][] = [];
 
   // states
   let origin: gridPosition;
   let moving = false;
   let update = false;
-
 
 // --- functions ---
   // calculators
@@ -31,12 +35,10 @@
   }
 
   function setWinXY() {
-    winX = window.innerWidth/blockSize;
-    winY = window.innerHeight/blockSize;
-    if (winX%1>0) winX = Math.floor(winX) + 2;
-    else winX = Math.floor(winX) + 1
-    if (winY%1>0) winY = Math.floor(winY) + 2;
-    else winX = Math.floor(winX) + 1
+    winX = (window.innerWidth+blockSize)/blockSize;
+    winY = (window.innerHeight+blockSize)/blockSize;
+    winX = (winX%1 > 0) ? Math.floor(winX)+1 : winX;
+    winY = (winY%1 > 0) ? Math.floor(winY)+1 : winY;
   }
 
   function populateBlocks() {
@@ -54,7 +56,7 @@
     show = newShow;
   }
 
-  function fillBlocks() {
+  async function fillBlocks() {
     for (let row of show) {
       for (let block of row) {
         let blockID = `${bx+block['x']},${by+block['y']}`;
@@ -62,14 +64,15 @@
           if (block.element != null) {
             let ctx = block.element.getContext('2d');
             ctx.clearRect(0,0,blockSize,blockSize);
-            if (blocks[blockID].image != undefined) {
-              ctx.drawImage(blocks[blockID].image, 0, 0);
+            if (blocks[blockID] != null) {
+              ctx.drawImage(await createImageBitmap(blocks[blockID]), 0, 0);
             }
           }
         } else {
-          blocks[blockID] = {
-            x: bx+block['x'],
-            y: by+block['y']
+          blocks[blockID] = null;
+          if (block.element != null) {
+            let ctx = block.element.getContext('2d');
+            ctx.clearRect(0,0,blockSize,blockSize);
           }
         }
       }
@@ -85,8 +88,8 @@
         let ctx = block.element.getContext('2d');
         ctx.globalCompositeOperation = 'source-over';
 
-        ctx.drawImage(image, -(block.x*blockSize-offsetX)-1, -(block.y*blockSize-offsetY)-1);
-        blocks[blockID].image = await createImageBitmap(ctx.getImageData(0, 0, blockSize, blockSize));
+        ctx.drawImage(image, -(block.x*blockSize-offsetX), -(block.y*blockSize-offsetY));
+        blocks[blockID] = ctx.getImageData(0, 0, blockSize, blockSize);
       }
     }
   }
@@ -99,29 +102,42 @@
         ctx.globalCompositeOperation = 'destination-out';
 
         ctx.drawImage(image, -(block.x*blockSize-offsetX)-1, -(block.y*blockSize-offsetY)-1);
-        blocks[blockID].image = await createImageBitmap(ctx.getImageData(0, 0, blockSize, blockSize));
+        blocks[blockID] = ctx.getImageData(0, 0, blockSize, blockSize);
       }
     }
   }
 
-  // inits
+  import { saveCanvas as sf } from "@store"
+  export const saveCanvas = () => {
+    sf(id, {...blocks});
+  }
+
   offsetXY();
   setWinXY();
   populateBlocks();
-  fillBlocks();
 
 
   // observers
   $:if (bx != undefined && by != undefined) {
-    console.log('hello')
     fillBlocks();
   }
+
+  // ---- DB Connection ----
+  import { current as cr } from "@store";
+  cr.subscribe(async r => {
+    if (!r) return;
+    id = r.id;
+    orx = posx; ory = posy;
+    blocks = {...r.blocks};
+    offsetXY();
+    fillBlocks();
+  });
 </script>
 
 <svelte:window 
   on:resize={setWinXY} 
   on:mousedown={({button, clientX, clientY}) => {
-    if (button == 1) {
+    if (button == 1 || (button == 0 && tool == "move")) {
       moving = true;
       origin = {
         x: clientX,
@@ -130,7 +146,7 @@
     }
   }}
   on:mouseup={({button}) => {
-    if (button == 1) {
+    if (button == 1 || (button == 0 && tool == "move")) {
       moving = false;
       orx = posx;
       ory = posy;
@@ -163,7 +179,7 @@
           height={blockSize}
           style:top={`${y*blockSize}px`}
           style:left={`${x*blockSize}px`}
-          bind:this={block["element"]}
+          bind:this={block.element}
         />
       {/each}
     {/each}
@@ -187,7 +203,6 @@
     }
 
     :global(canvas) {
-      border: 1px solid white;
       position: absolute;
     }
   }

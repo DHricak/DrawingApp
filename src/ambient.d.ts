@@ -14,11 +14,6 @@ declare global {
     x: number = 0,
     y: number = 0
   }
-  interface block {
-    x: number,
-    y: number,
-    image?: ImageBitmap
-  }
   interface uiblock {
     x: number,
     y: number,
@@ -26,6 +21,15 @@ declare global {
   }
   interface Dict<T> {
     [key: string]: T;
+  }
+
+  interface saveRow {
+    id: number,
+    name: string,
+    blocks: Dict<ImageData>,
+    position: number[],
+    blockSize: number,
+    createdData: Date
   }
 
 

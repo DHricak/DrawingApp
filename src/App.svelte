@@ -5,24 +5,39 @@
   import Multicanvas from "./components/multicanvas.svelte"
 
   import PenProps from "@comps/pen.props.svelte"
-  import InkProps from "@comps/ink.props.svelte"
+
+  let hideUI = false;
 
   import { tool as tot } from "@store";
-  let tool: tools;
+  let tool;
   tot.subscribe(r => tool = r);
+
+  import { files as fs, newCanvas } from "@store";
+  let files: saveRow[];fs.subscribe(r => files = r);
 
   let draw;
   let eraser;
+  let saveDrawing;
+  let loadDefault;
 
-  import { onMount} from 'svelte';
+  import { onMount } from 'svelte';
   onMount(() => {
   })
 </script>
+
+<svelte:window 
+  on:keydown={({shiftKey}) => {
+    if (shiftKey) {
+      hideUI = !hideUI;
+    }
+  }}
+/>
 
 <main>
   <Multicanvas 
     bind:drawToMC={draw}
     bind:eraserMC={eraser}
+    bind:saveCanvas={saveDrawing}
   />
   <Canvas 
     on:imgout={({detail}) => {
@@ -32,12 +47,14 @@
       eraser(detail.image);
     }}
   />
-  <Settings/>
-  <Toolbar/>
-  {#if tool == "pen" || tool == "eraser"}
-    <PenProps/>
-  {:else if tool == "ink"}
-    <InkProps/>
+  {#if !hideUI}
+    <Settings
+      on:save={() => saveDrawing()}
+    />
+    <Toolbar/>
+    {#if tool == "pen" || tool == "eraser"}
+      <PenProps/>
+    {/if}
   {/if}
 </main>
 
