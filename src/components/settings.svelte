@@ -37,7 +37,10 @@
       <span class="files">
         {#each files as f}
           <button
-            on:dblclick={() => cr.set(f)}
+            on:dblclick={() => {
+              cr.set(f);
+              localStorage.setItem("ccv", `${f.id}`);
+            }}
             class:sel={current.id == f.id}
           >
             {f.name} / {`${f.createdData.getDate()}.${f.createdData.getMonth()}.${f.createdData.getFullYear()}`}
@@ -67,6 +70,13 @@
           New
         </button>
       </span>
+      <button 
+        class="rsa"
+        on:click={() => dropDB()}
+      >
+        Delete All
+
+      </button>
     </div>
   {/if}
 </div>
@@ -76,10 +86,7 @@
     z-index: 9;
     border: 1px solid #343434;
     border-radius: 4px;
-    
-    position: absolute;
-    top: 10px;
-    left: 10px;
+    width: min-content;
   }
 
   .open, .view .close {
@@ -123,7 +130,7 @@
       display: flex;
       flex-direction: column;
 
-      max-height: 8rem;
+      max-height: 14rem;
       overflow-y: auto;
 
       button {
@@ -133,7 +140,7 @@
         padding: 4px;
 
         width: 100%;
-        height: 3rem;
+        min-height: 2.6rem;
 
         display: flex;
         align-items: center;
@@ -187,5 +194,11 @@
         background-color: #48e739;
       }
     }
+  }
+
+  button.rsa {
+    background-color: #dd3b3b;
+    padding: .4rem 1.2rem;
+    width: 100%;
   }
 </style>

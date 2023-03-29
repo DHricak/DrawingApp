@@ -52,6 +52,7 @@
     padding: 4px;
 
     background-color: #121212;
+    border: 1px solid #343434;
   }
 
   nav button {

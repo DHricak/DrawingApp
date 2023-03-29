@@ -34,6 +34,19 @@ export async function updateFS(): Promise<saveRow[]> {
     files.set(tfs);
   }
 
+  let ccv = localStorage.getItem("ccv");
+  if (ccv == undefined) current.set(tfs[0]);
+  else {
+    let crt: saveRow[] = await connection.select({
+      from: "Files",
+      where: {
+        id: parseInt(ccv)
+      }
+    });
+    if (crt.length == 0) current.set(tfs[0]);
+    else current.set(crt[0]);
+  }
+
   return tfs;
 }
 
@@ -55,8 +68,7 @@ export async function init() {
   if (isNew) {
     newCanvas();
   };
-  let rt = await updateFS();
-  current.set(rt[0]);
+  await updateFS();
 }
 init();
 
@@ -101,8 +113,12 @@ export async function deleteCanvas(id: number) {
     let rt = await updateFS();
     current.set(rt[0]);
   }
+  files.set(await connection.select({
+    from: "Files"
+  }));
 }
 
 export async function dropDB() {
-  await connection.dropDb()
+  await connection.dropDb();
+  init();
 }

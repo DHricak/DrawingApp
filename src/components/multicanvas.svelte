@@ -18,6 +18,7 @@
 
   // blocks grid
   let blocks: Dict<ImageData> = {};
+  let blocksd: Dict<ImageBitmap> = {};
   let show: uiblock[][] = [];
 
   // states
@@ -65,7 +66,10 @@
             let ctx = block.element.getContext('2d');
             ctx.clearRect(0,0,blockSize,blockSize);
             if (blocks[blockID] != null) {
-              ctx.drawImage(await createImageBitmap(blocks[blockID]), 0, 0);
+              if ((blockID in blocksd) == false) {
+                blocksd[blockID] = await createImageBitmap(blocks[blockID]);
+              }
+              ctx.drawImage(blocksd[blockID], 0, 0);
             }
           }
         } else {
@@ -109,7 +113,7 @@
 
   import { saveCanvas as sf } from "@store"
   export const saveCanvas = () => {
-    sf(id, {...blocks});
+    sf(id, blocks);
   }
 
   offsetXY();
@@ -128,7 +132,9 @@
     if (!r) return;
     id = r.id;
     orx = posx; ory = posy;
-    blocks = {...r.blocks};
+    blocks = r.blocks;
+    blocksd = {};
+    console.log(blocks)
     offsetXY();
     fillBlocks();
   });
@@ -151,6 +157,7 @@
       orx = posx;
       ory = posy;
     }
+    setTimeout(() => sf(id, blocks), 5000)
   }}
   on:mousemove={({clientX, clientY}) => {
     if (moving) {

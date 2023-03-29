@@ -25,11 +25,6 @@
 <style lang="scss">
   .props {
     z-index: 8;
-    
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
 
     min-width: 14rem;
     min-height: 1rem;
@@ -41,6 +36,8 @@
 
     border-radius: 4px;
     background-color: #121212;
+
+    border: 1px solid #343434;
 
     label {
       display: grid;

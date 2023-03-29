@@ -48,20 +48,46 @@
     }}
   />
   {#if !hideUI}
-    <Settings
-      on:save={() => saveDrawing()}
-    />
     <Toolbar/>
-    {#if tool == "pen" || tool == "eraser"}
-      <PenProps/>
-    {/if}
+    <div class="sb">
+      <Settings
+        on:save={() => saveDrawing()}
+      />
+      {#if tool == "pen" || tool == "eraser"}
+        <PenProps/>
+      {/if}
+      <div></div>
+    </div>
+    <p id="ist">Controls: Middle mouse button for movement, shift to hide ui overlay. If there is an error report and restart.</p>
   {/if}
 </main>
 
-<style>
+<style lang="scss">
   main {
+    position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
+  }
+
+  .sb {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    width: min-content;
+    min-height: fit-content;
+    height: 100%;
+    padding: 10px;
+  }
+
+  #ist {
+    z-index: 7;
+    position: absolute;
+    bottom: 6px;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    color: #ccc;
   }
 </style>
