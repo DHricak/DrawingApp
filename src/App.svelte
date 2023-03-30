@@ -56,7 +56,7 @@
       <div></div>
     </div>
     <p id="ist">Controls: Middle mouse button for movement, shift to hide ui overlay. If there is an error report and restart.</p>
-    <iframe id="gfl" src="/ghbtn.html" frameborder="0" width="200" height="28" allowtransparency="true"></iframe>
+    <iframe id="gfl" src="/DrawingApp/dist/ghbtn.html" frameborder="0" width="200" height="28" allowtransparency="true"></iframe>
   {/if}
 </main>
 
