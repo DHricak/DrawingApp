@@ -18,11 +18,6 @@
   let draw;
   let eraser;
   let saveDrawing;
-  let loadDefault;
-
-  import { onMount } from 'svelte';
-  onMount(() => {
-  })
 </script>
 
 <svelte:window 
@@ -48,7 +43,9 @@
     }}
   />
   {#if !hideUI}
-    <Toolbar/>
+    <div class="tb">
+      <Toolbar/>
+    </div>
     <div class="sb">
       <Settings
         on:save={() => saveDrawing()}
@@ -59,6 +56,7 @@
       <div></div>
     </div>
     <p id="ist">Controls: Middle mouse button for movement, shift to hide ui overlay. If there is an error report and restart.</p>
+    <iframe id="gfl" src="/ghbtn.html" frameborder="0" width="200" height="28" allowtransparency="true"></iframe>
   {/if}
 </main>
 
@@ -89,5 +87,12 @@
     text-align: center;
     margin: 0;
     color: #ccc;
+  }
+
+  #gfl {
+    z-index: 7;
+    position: absolute;
+    top: 10px;
+    right: 10px;
   }
 </style>
